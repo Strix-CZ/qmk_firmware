@@ -50,6 +50,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MOUSEKEY_MAX_SPEED      7
 #define MOUSEKEY_WHEEL_DELAY 0
 
+/*
+ * The debounce filtering reports a key/switch change directly,
+ * without any extra delay. After that the debounce logic will filter
+ * all further changes, until the key/switch reports the same state for
+ * the given count of scans.
+ * So a perfect switch will get a short debounce period and
+ * a bad key will get a much longer debounce period.
+ * The result is an adaptive debouncing period for each switch.
+ *
+ * If you don't define it here, the matrix code will default to
+ * 5, which is now closer to 10ms, but still plenty according to
+ * manufacturer specs.
+ */
+// in my keyboard it used to be 7
 #define DEBOUNCE 30
 
 #define TAPPING_TOGGLE  1
@@ -57,6 +71,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* define if matrix has ghost */
 //#define MATRIX_HAS_GHOST
 
+
+// https://github.com/qmk/qmk_firmware/issues/2278
+// PERMISSIVE_HOLD = Always the modified output
+// IGNORE_MOD_TAP_INTERRUPT = Always the both keys, unless you hold both keys
+//    for at least TAPPING_TERM
+// PERMISSIVE_HOLD + IGNORE_MOD_TAP_INTERRUPT = Modified output if the other key
+//    is released before the tap key, or if both keys are held longer than TAPPING_TERM.
+//    So both keys are output when releasing the tap key before the other key and held
+//    lesss than TAPPING_TERM
+// TODO - try it out
+//#define PERMISSIVE_HOLD
 #define TAPPING_TERM    200
 #define IGNORE_MOD_TAP_INTERRUPT // this makes it possible to do rolling combos (zx) with keys that convert to other keys on hold (z becomes ctrl when you hold it, and when this option isn't enabled, z rapidly followed by x actually sends Ctrl-x. That's bad.)
 
@@ -66,6 +91,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define LOCKING_RESYNC_ENABLE
 
 /* key combination for command */
+/*#define IS_COMMAND() ( \
+    keyboard_report->mods == (MOD_BIT(KC_LCTL) | MOD_BIT(KC_RCTL)) || \
+    keyboard_report->mods == (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT)) \
+)*/
 #define IS_COMMAND() ( \
     get_mods() == (MOD_BIT(KC_LCTL) | MOD_BIT(KC_RCTL)) || \
     get_mods() == (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT)) \
@@ -102,20 +131,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGBW
 
 #define RGBLIGHT_SLEEP
-
-/*
- * The debounce filtering reports a key/switch change directly,
- * without any extra delay. After that the debounce logic will filter
- * all further changes, until the key/switch reports the same state for
- * the given count of scans.
- * So a perfect switch will get a short debounce period and
- * a bad key will get a much longer debounce period.
- * The result is an adaptive debouncing period for each switch.
- *
- * If you don't define it here, the matrix code will default to
- * 5, which is now closer to 10ms, but still plenty according to
- * manufacturer specs.
- */
 
 
 // RGB backlight
@@ -155,6 +170,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //#define NO_ACTION_LAYER
 //#define NO_ACTION_TAPPING
 //#define NO_ACTION_ONESHOT
-#define NO_ACTION_MACRO
-#define NO_ACTION_FUNCTION
+//#define NO_ACTION_MACRO
+//#define NO_ACTION_FUNCTION
 //#define DEBUG_MATRIX_SCAN_RATE
